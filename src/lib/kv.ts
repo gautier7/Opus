@@ -4,17 +4,21 @@ import { Project } from "@/lib/types";
 const PROJECTS_SET_KEY = "projects:index";
 
 function assertKvConfigured(): void {
-  // Support REDIS_* and Upstash names
+  // Support Vercel's KV_* names, REDIS_* names, and Upstash names
+  const hasKvRest = Boolean(
+    process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
+  );
   const hasRedisRest = Boolean(
     process.env.REDIS_REST_API_URL && process.env.REDIS_REST_API_TOKEN
   );
   const hasUpstashRest = Boolean(
     process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
   );
+  const hasDirectUrl = Boolean(process.env.KV_URL || process.env.REDIS_URL);
 
-  if (!hasRedisRest && !hasUpstashRest) {
+  if (!hasKvRest && !hasRedisRest && !hasUpstashRest && !hasDirectUrl) {
     throw new Error(
-      "Redis is not configured. Set REDIS_REST_API_URL and REDIS_REST_API_TOKEN (or UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN) in .env.local."
+      "Redis is not configured. Set KV_REST_API_URL and KV_REST_API_TOKEN (or other supported Redis environment variables) in .env.local."
     );
   }
 }
