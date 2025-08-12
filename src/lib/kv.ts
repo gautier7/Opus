@@ -42,7 +42,7 @@ export async function getProject(id: string): Promise<Project | null> {
 
 export async function listProjects(): Promise<Project[]> {
   assertKvConfigured();
-  const ids = (await kv.smembers<string>(PROJECTS_SET_KEY)) ?? [];
+  const ids = (await kv.smembers(PROJECTS_SET_KEY)) ?? [];
   if (ids.length === 0) return [];
   const keys = ids.map((id) => `project:${id}`);
   const entries = (await kv.mget<Project[]>(...keys)) as (Project | null)[];
